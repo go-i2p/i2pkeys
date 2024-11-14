@@ -4,7 +4,7 @@ i2pkeys
 Generates and displays the contents of files that are storing i2p keys in the
 incompatible format used for sam3
 
-[![Go Report Card](https://goreportcard.com/badge/github.com/eyedeekay/i2pkeys)](https://goreportcard.com/report/github.com/eyedeekay/i2pkeys)
+[![Go Report Card](https://goreportcard.com/badge/github.com/go-i2p/i2pkeys)](https://goreportcard.com/report/github.com/go-i2p/i2pkeys)
 
 ## Verbosity ##
 Logging can be enabled and configured using the DEBUG_I2P environment variable. By default, logging is disabled.
