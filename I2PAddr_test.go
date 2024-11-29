@@ -70,7 +70,7 @@ func Test_NewI2PAddrFromString(t *testing.T) {
 		}
 	})
 
-	t.Run("Address with .i2p suffix", func(t *testing.T) { //CHECK
+	t.Run("Address with .i2p suffix", func(t *testing.T) { // CHECK
 		addr, err := NewI2PAddrFromString(validI2PAddrB64 + ".i2p")
 		if err != nil {
 			t.Fatalf("NewI2PAddrFromString failed for address with .i2p suffix: '%v'", err)
@@ -169,15 +169,15 @@ func Test_KeyGenerationAndHandling(t *testing.T) {
 		t.Fatalf("Failed to generate new I2P keys: %v", err)
 	}
 	t.Run("LoadKeysIncompat", func(t *testing.T) {
-		//extract keys
+		// extract keys
 		addr := keys.Address
 		fmt.Println(addr)
 
-		//both := removeNewlines(keys.Both)
+		// both := removeNewlines(keys.Both)
 		both := keys.Both
 		fmt.Println(both)
 
-		//FORMAT TO LOAD: (Address, Both)
+		// FORMAT TO LOAD: (Address, Both)
 		addrload := addr.Base64() + "\n" + both
 
 		r := strings.NewReader(addrload)
@@ -187,9 +187,8 @@ func Test_KeyGenerationAndHandling(t *testing.T) {
 		}
 
 		if loadedKeys.Address != keys.Address {
-			//fmt.Printf("loadedKeys.Address md5hash: '%s'\n keys.Address md5hash: '%s'\n", getMD5Hash(string(loadedKeys.Address)), getMD5Hash(string(keys.Address)))
+			// fmt.Printf("loadedKeys.Address md5hash: '%s'\n keys.Address md5hash: '%s'\n", getMD5Hash(string(loadedKeys.Address)), getMD5Hash(string(keys.Address)))
 			t.Errorf("LoadKeysIncompat returned incorrect address. Got '%s', want '%s'", loadedKeys.Address, keys.Address)
-
 		}
 		if loadedKeys.Both != keys.Both {
 			t.Errorf("LoadKeysIncompat returned incorrect pair. Got '%s'\nwant '%s'\n", loadedKeys.Both, keys.Both)
@@ -199,7 +198,6 @@ func Test_KeyGenerationAndHandling(t *testing.T) {
 				}
 			*/
 		}
-
 	})
 
 	expected := keys.Address.Base64() + "\n" + keys.Both

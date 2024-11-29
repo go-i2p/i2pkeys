@@ -4,9 +4,7 @@ import (
 	"github.com/go-i2p/logger"
 )
 
-var (
-	log *logger.Logger
-)
+var log *logger.Logger
 
 func InitializeI2PKeysLogger() {
 	logger.InitializeGoI2PLogger()

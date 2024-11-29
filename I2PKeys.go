@@ -128,6 +128,7 @@ func StoreKeysIncompat(k I2PKeys, w io.Writer) error {
 	log.WithField("keys", k).Debug("Keys stored successfully")
 	return nil
 }
+
 func StoreKeys(k I2PKeys, r string) error {
 	log.WithField("filename", r).Debug("Storing keys to file")
 	if _, err := os.Stat(r); err != nil {
@@ -190,7 +191,7 @@ func (k I2PKeys) PrivateKey() crypto.PrivateKey {
 	_, err := pk.Sign(rand.Reader, []byte("nonsense"), crypto.Hash(0))
 	if err != nil {
 		log.WithError(err).Warn("Error in private key signature")
-		//TODO: Elgamal, P256, P384, P512, GOST? keys?
+		// TODO: Elgamal, P256, P384, P512, GOST? keys?
 	}
 	return pk
 }
@@ -225,4 +226,3 @@ func (k I2PKeys) HostnameEntry(hostname string, opts crypto.SignerOpts) (string,
 	}
 	return string(sig), nil
 }
-
