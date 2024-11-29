@@ -3,8 +3,6 @@ package i2pkeys
 import (
 	"bytes"
 	"crypto"
-	"crypto/ed25519"
-	"crypto/rand"
 	"encoding/base32"
 	"encoding/base64"
 	"errors"
@@ -156,11 +154,12 @@ func (k I2PKeys) Network() string {
 	return k.Address.Network()
 }
 
-// Returns the public keys of the I2PKeys.
+// Returns the public keys of the I2PKeys in Addr form
 func (k I2PKeys) Addr() I2PAddr {
 	return k.Address
 }
 
+// Returns the public keys of the I2PKeys.
 func (k I2PKeys) Public() crypto.PublicKey {
 	return k.Address
 }
@@ -177,52 +176,8 @@ func (k I2PKeys) Private() []byte {
 	return dest
 }
 
-type SecretKey interface {
-	Sign(rand io.Reader, digest []byte, opts crypto.SignerOpts) (signature []byte, err error)
-}
-
-func (k I2PKeys) SecretKey() SecretKey {
-	var pk ed25519.PrivateKey = k.Private()
-	return pk
-}
-
-func (k I2PKeys) PrivateKey() crypto.PrivateKey {
-	var pk ed25519.PrivateKey = k.Private()
-	_, err := pk.Sign(rand.Reader, []byte("nonsense"), crypto.Hash(0))
-	if err != nil {
-		log.WithError(err).Warn("Error in private key signature")
-		// TODO: Elgamal, P256, P384, P512, GOST? keys?
-	}
-	return pk
-}
-
-func (k I2PKeys) Ed25519PrivateKey() *ed25519.PrivateKey {
-	return k.SecretKey().(*ed25519.PrivateKey)
-}
-
-/*func (k I2PKeys) ElgamalPrivateKey() *ed25519.PrivateKey {
-	return k.SecretKey().(*ed25519.PrivateKey)
-}*/
-
-//func (k I2PKeys) Decrypt(rand io.Reader, msg []byte, opts crypto.DecrypterOpts) (plaintext []byte, err error) {
-//return k.SecretKey().(*ed25519.PrivateKey).Decrypt(rand, msg, opts)
-//}
-
-func (k I2PKeys) Sign(rand io.Reader, digest []byte, opts crypto.SignerOpts) (signature []byte, err error) {
-	return k.SecretKey().(*ed25519.PrivateKey).Sign(rand, digest, opts)
-}
-
 // Returns the keys (both public and private), in I2Ps base64 format. Use this
 // when you create sessions.
 func (k I2PKeys) String() string {
 	return k.Both
-}
-
-func (k I2PKeys) HostnameEntry(hostname string, opts crypto.SignerOpts) (string, error) {
-	sig, err := k.Sign(rand.Reader, []byte(hostname), opts)
-	if err != nil {
-		log.WithError(err).Error("Error signing hostname")
-		return "", fmt.Errorf("error signing hostname: %w", err)
-	}
-	return string(sig), nil
 }
