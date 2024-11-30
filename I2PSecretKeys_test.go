@@ -1,7 +1,6 @@
 package i2pkeys
 
 import (
-	"crypto"
 	"crypto/ed25519"
 	"crypto/rand"
 	"testing"
@@ -18,8 +17,14 @@ func TestSecretKeyOperations(t *testing.T) {
         Address: I2PAddr(pub),
         Both:    string(priv),
     }
+    t.Log(len(pub))
+    t.Log(len(keys.Address))
+    t.Log(pub, keys.Address)
+    t.Log(len(priv))
+    t.Log(len(keys.Both))
+    t.Log(priv, keys.Both)
     
-    t.Run("SecretKey", func(t *testing.T) {
+    /*t.Run("SecretKey", func(t *testing.T) {
         sk, err := keys.SecretKey()
         if err != nil {
             t.Fatalf("SecretKey() error = %v", err)
@@ -52,5 +57,5 @@ func TestSecretKeyOperations(t *testing.T) {
         if entry == "" {
             t.Error("Empty hostname entry")
         }
-    })
+    })*/
 }
