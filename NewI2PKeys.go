@@ -16,7 +16,7 @@ const (
 	maxResponseSize = 4096
 
 	cmdHello      = "HELLO VERSION MIN=3.1 MAX=3.1\n"
-	cmdGenerate   = "DEST GENERATE SIGNATURE_TYPE=7\n"
+	cmdGenerate   = "DEST GENERATE SIGNATURE_TYPE=%s\n"
 	responseOK    = "RESULT=OK"
 	pubKeyPrefix  = "PUB="
 	privKeyPrefix = "PRIV="
@@ -44,16 +44,19 @@ func newSAMClient(options ...func(*samClient)) *samClient {
 
 // NewDestination generates a new I2P destination using the SAM bridge.
 // This is the only public function that external code should use.
-func NewDestination() (*I2PKeys, error) {
+func NewDestination(keyType ...string) (*I2PKeys, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), defaultTimeout)
 	defer cancel()
+	if keyType == nil {
+		keyType = []string{"7"}
+	}
 
 	client := newSAMClient()
-	return client.generateDestination(ctx)
+	return client.generateDestination(ctx, keyType[0])
 }
 
 // generateDestination handles the key generation process
-func (c *samClient) generateDestination(ctx context.Context) (*I2PKeys, error) {
+func (c *samClient) generateDestination(ctx context.Context, keyType string) (*I2PKeys, error) {
 	conn, err := c.dial(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("connecting to SAM bridge: %w", err)
@@ -64,7 +67,7 @@ func (c *samClient) generateDestination(ctx context.Context) (*I2PKeys, error) {
 		return nil, fmt.Errorf("SAM handshake failed: %w", err)
 	}
 
-	keys, err := c.generateKeys(ctx, conn)
+	keys, err := c.generateKeys(ctx, conn, keyType)
 	if err != nil {
 		return nil, fmt.Errorf("generating keys: %w", err)
 	}
@@ -98,7 +101,8 @@ func (c *samClient) handshake(ctx context.Context, conn net.Conn) error {
 	return nil
 }
 
-func (c *samClient) generateKeys(ctx context.Context, conn net.Conn) (*I2PKeys, error) {
+func (c *samClient) generateKeys(ctx context.Context, conn net.Conn, keyType string) (*I2PKeys, error) {
+	cmdGenerate := fmt.Sprintf(cmdGenerate, keyType)
 	if err := c.writeCommand(conn, cmdGenerate); err != nil {
 		return nil, err
 	}

@@ -13,7 +13,6 @@ const (
 
 	// Domain suffixes
 	I2PDomainSuffix = ".i2p"
-	B32DomainSuffix = ".b32.i2p"
 )
 
 // I2PAddr represents an I2P destination, equivalent to an IP address.
@@ -66,8 +65,8 @@ func validateAddressFormat(addr string) error {
 			len(addr), MinAddressLength, MaxAddressLength)
 	}
 
-	if strings.HasSuffix(addr, B32DomainSuffix) {
-		return fmt.Errorf("cannot convert %s to full destination", B32DomainSuffix)
+	if strings.HasSuffix(addr, B32Suffix) {
+		return fmt.Errorf("cannot convert %s to full destination", B32Suffix)
 	}
 
 	return nil
