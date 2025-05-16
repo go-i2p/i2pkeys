@@ -60,6 +60,10 @@ func sanitizeAddress(addr string) string {
 }
 
 func validateAddressFormat(addr string) error {
+	host, _, err := net.SplitHostPort(addr)
+	if host != "" {
+		addr = host
+	}
 	if len(addr) > MaxAddressLength || len(addr) < MinAddressLength {
 		return fmt.Errorf("invalid address length: got %d, want between %d and %d",
 			len(addr), MinAddressLength, MaxAddressLength)
