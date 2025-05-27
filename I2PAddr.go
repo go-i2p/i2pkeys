@@ -91,12 +91,14 @@ func validateBase64Encoding(addr string) error {
 
 // NewI2PAddrFromBytes creates a new I2P address from a byte array.
 func NewI2PAddrFromBytes(addr []byte) (I2PAddr, error) {
-	if len(addr) > MaxAddressLength || len(addr) < MinAddressLength {
-		return I2PAddr(""), fmt.Errorf("invalid address length: got %d, want between %d and %d",
-			len(addr), MinAddressLength, MaxAddressLength)
+	// Calculate the expected encoded length to validate against string constraints
+	encodedLen := i2pB64enc.EncodedLen(len(addr))
+	if encodedLen > MaxAddressLength || encodedLen < MinAddressLength {
+		return I2PAddr(""), fmt.Errorf("invalid address length: encoded length %d, want between %d and %d",
+			encodedLen, MinAddressLength, MaxAddressLength)
 	}
 
-	encoded := make([]byte, i2pB64enc.EncodedLen(len(addr)))
+	encoded := make([]byte, encodedLen)
 	i2pB64enc.Encode(encoded, addr)
 	return I2PAddr(encoded), nil
 }
