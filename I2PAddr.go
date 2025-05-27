@@ -3,6 +3,7 @@ package i2pkeys
 import (
 	"crypto/sha256"
 	"fmt"
+	"net"
 	"strings"
 )
 
@@ -61,6 +62,10 @@ func sanitizeAddress(addr string) string {
 
 func validateAddressFormat(addr string) error {
 	host, _, err := net.SplitHostPort(addr)
+	if err != nil {
+		// If SplitHostPort fails, it means addr is not in host:port format
+		host = addr
+	}
 	if host != "" {
 		addr = host
 	}
@@ -68,11 +73,9 @@ func validateAddressFormat(addr string) error {
 		return fmt.Errorf("invalid address length: got %d, want between %d and %d",
 			len(addr), MinAddressLength, MaxAddressLength)
 	}
-
 	if strings.HasSuffix(addr, B32Suffix) {
 		return fmt.Errorf("cannot convert %s to full destination", B32Suffix)
 	}
-
 	return nil
 }
 
