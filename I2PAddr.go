@@ -73,10 +73,19 @@ func validateAddressFormat(addr string) error {
 }
 
 func validateBase64Encoding(addr string) error {
-	buf := make([]byte, i2pB64enc.DecodedLen(len(addr)))
-	if _, err := i2pB64enc.Decode(buf, []byte(addr)); err != nil {
+	// Use DecodeString which handles buffer allocation internally
+	// and returns the actual decoded bytes, providing better validation
+	decoded, err := i2pB64enc.DecodeString(addr)
+	if err != nil {
 		return fmt.Errorf("invalid base64 encoding: %w", err)
 	}
+
+	// Validate that we got a reasonable amount of decoded data
+	// This prevents edge cases where decoding succeeds but produces empty/minimal output
+	if len(decoded) == 0 {
+		return fmt.Errorf("base64 decoding produced empty result")
+	}
+
 	return nil
 }
 
