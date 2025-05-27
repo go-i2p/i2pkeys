@@ -164,16 +164,34 @@ func (k I2PKeys) Public() crypto.PublicKey {
 	return k.Address
 }
 
+// Private returns the private key as a byte slice.
 func (k I2PKeys) Private() []byte {
 	log.Debug("Extracting private key")
-	src := strings.Split(k.String(), k.Addr().String())[0]
-	var dest []byte
-	_, err := i2pB64enc.Decode(dest, []byte(src))
+
+	// The private key is everything after the public key in the combined string
+	fullKeys := k.String()
+	publicKey := k.Addr().String()
+
+	// Find where the public key ends in the full string
+	if !strings.HasPrefix(fullKeys, publicKey) {
+		log.Error("Invalid key format: public key not found at start of combined keys")
+		return nil
+	}
+
+	// Extract the private key portion (everything after the public key)
+	privateKeyB64 := fullKeys[len(publicKey):]
+
+	// Pre-allocate destination slice with appropriate capacity
+	dest := make([]byte, i2pB64enc.DecodedLen(len(privateKeyB64)))
+
+	n, err := i2pB64enc.Decode(dest, []byte(privateKeyB64))
 	if err != nil {
 		log.WithError(err).Error("Error decoding private key")
-		panic(err)
+		return nil // Return nil instead of panicking
 	}
-	return dest
+
+	// Return only the portion that was actually decoded
+	return dest[:n]
 }
 
 // Returns the keys (both public and private), in I2Ps base64 format. Use this

@@ -116,6 +116,16 @@ func (c *samClient) generateKeys(ctx context.Context, conn net.Conn, keyType str
 	if err != nil {
 		return nil, err
 	}
+	log.Println("Generated keys:", pub, priv)
+	if len(pub) == 0 || len(priv) == 0 {
+		return nil, fmt.Errorf("invalid key response: %s", response)
+	}
+	if len(pub) > maxResponseSize || len(priv) > maxResponseSize {
+		return nil, fmt.Errorf("key response too large: %s", response)
+	}
+	if len(pub) < 128 || len(priv) < 128 {
+		return nil, fmt.Errorf("key response too small: %s", response)
+	}
 
 	return &I2PKeys{
 		Address: I2PAddr(pub),

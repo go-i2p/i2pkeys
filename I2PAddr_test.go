@@ -211,6 +211,18 @@ func Test_KeyGenerationAndHandling(t *testing.T) {
 		if buf.String() != expected {
 			t.Errorf("StoreKeysIncompat wrote incorrect data. Got '%s', want '%s'", buf.String(), expected)
 		}
+		// store the buffer content to a permanent local file in this directory
+		err = ioutil.WriteFile("test_keys.txt", buf.Bytes(), 0644)
+		if err != nil {
+			t.Fatalf("Failed to write buffer content to file: '%v'", err)
+		}
+		content, err := ioutil.ReadFile("test_keys.txt")
+		if err != nil {
+			t.Fatalf("Failed to read test_keys.txt: '%v'", err)
+		}
+		if string(content) != expected {
+			t.Errorf("StoreKeysIncompat wrote incorrect data to file. Got '%s', want '%s'", string(content), expected)
+		}
 	})
 
 	t.Run("StoreKeys", func(t *testing.T) {
