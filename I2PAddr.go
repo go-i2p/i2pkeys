@@ -62,13 +62,11 @@ func sanitizeAddress(addr string) string {
 
 func validateAddressFormat(addr string) error {
 	host, _, err := net.SplitHostPort(addr)
-	if err != nil {
-		// If SplitHostPort fails, it means addr is not in host:port format
-		host = addr
-	}
-	if host != "" {
+	if err == nil {
+		// Successfully split host:port, use just the host part
 		addr = host
 	}
+
 	if len(addr) > MaxAddressLength || len(addr) < MinAddressLength {
 		return fmt.Errorf("invalid address length: got %d, want between %d and %d",
 			len(addr), MinAddressLength, MaxAddressLength)
