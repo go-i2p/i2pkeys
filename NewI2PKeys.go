@@ -61,7 +61,12 @@ func (c *samClient) generateDestination(ctx context.Context, keyType string) (*I
 	if err != nil {
 		return nil, fmt.Errorf("connecting to SAM bridge: %w", err)
 	}
-	defer conn.Close()
+	// Ensure connection is always closed, even on error paths
+	defer func() {
+		if closeErr := conn.Close(); closeErr != nil {
+			log.WithError(closeErr).Debug("Error closing SAM connection")
+		}
+	}()
 
 	if err := c.handshake(ctx, conn); err != nil {
 		return nil, fmt.Errorf("SAM handshake failed: %w", err)
